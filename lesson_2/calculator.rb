@@ -24,7 +24,7 @@ elsif operator == '2'
 elsif operator == '3'
   result = number1.to_i() * number2.to_i()
 elsif operator == '3'
-  result = number1.to_f() / number2.to_f() 
+  result = number1.to_f() / number2.to_f()
 end
 
 Kernel.puts("The result is #{result}")
