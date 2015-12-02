@@ -1,5 +1,3 @@
-VALID_CHOICES = %w(r p sc l sp)
-
 CHOICES = { 'r' => 'rock',
             'p' => 'paper',
             'sc' => 'scissors',
