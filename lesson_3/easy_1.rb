@@ -1,5 +1,5 @@
 # Ex 1.
-#The original numbers array is printed because because numbers.uniqu
+# The original numbers array is printed because because numbers.uniqu
 # created a new array
 
 # Ex 2.
@@ -14,8 +14,8 @@
 # 2.6 !! before an object turns it into a boolean
 
 # Ex 3.
-advice = "Few things in life are as important as house training your pet dinosaur."
-puts advice.gsub("important", "urgent")
+advice = 'Few things in life are as important as house training your pet dinosaur.'
+puts advice.gsub('important', 'urgent')
 
 # Ex 4.
 numbers = [1, 2, 3, 4, 5]
@@ -23,15 +23,14 @@ numbers = [1, 2, 3, 4, 5]
 # numbers.delete(1) deletes the value 1 [2, 3, 4, 5]
 
 # Ex 5.
-puts "true" if (10..100) === 42
+puts 'true' if (10..100) === 42
 
 # Ex 6.
-famous_words = "seven years ago..."
-puts famous_words.prepend("Four score and ")
+famous_words = 'seven years ago...'
+puts famous_words.prepend('Four score and ')
 
-famous_words = "seven years ago..."
-puts famous_words.insert(0, "Four score and ")
-
+famous_words = 'seven years ago...'
+puts famous_words.insert(0, 'Four score and ')
 
 # Ex 7.
 
@@ -41,29 +40,29 @@ end
 
 number = 2
 
-how_deep = "number"
-5.times { how_deep.gsub!("number", "add_eight(number)") }
+how_deep = 'number'
+5.times { how_deep.gsub!('number', 'add_eight(number)') }
 
 p eval(how_deep) # 42
 
 # Ex 8.
 
-flintstones = ["Fred", "Wilma"]
-flintstones << ["Barney", "Betty"]
-flintstones << ["BamBam", "Pebbles"]
+flintstones = %w(Fred Wilma)
+flintstones << %w(Barney Betty)
+flintstones << %w(BamBam Pebbles)
 
 p flintstones.flatten!
 
 # Ex 9.
 
-flintstones = { "Fred" => 0, "Wilma" => 1, "Barney" => 2, "Betty" => 3,
-                "BamBam" => 4, "Pebbles" => 5 }
+flintstones = { 'Fred' => 0, 'Wilma' => 1, 'Barney' => 2, 'Betty' => 3,
+                'BamBam' => 4, 'Pebbles' => 5 }
 
-p flintstones.assoc("Barney")
+p flintstones.assoc('Barney')
 
 # Ex 10,
 
-flintstones = ["Fred", "Barney", "Wilma", "Betty", "Pebbles", "BamBam"]
+flintstones = %w(Fred Barney Wilma Betty Pebbles BamBam)
 flintstones.map!.with_index { |x, i| [x, i] }
 
 p flintstones.to_h
