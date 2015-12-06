@@ -1,7 +1,9 @@
 INITIAL_MARK = ' '
 PLAYER_MARK = 'X'
 COMPUTER_MARK = 'O'
-
+WINS = [[1,2,3], [4,5,6], [7,8,9],
+        [1,4,7], [2,5,8], [3,6,9],
+        [1,5,9], [3,5,7]]
 def prompt(message)
   puts "=> #{message}"
 end
@@ -37,7 +39,17 @@ def board_full?(board)
 end
 
 def someone_won?(board)
-  false
+  !!detect_winner(board)
+end
+
+def detect_winner(board)
+  winning_lines = WINS
+  if WINS.any? { |line| line.all? { |square| board[square] == PLAYER_MARK } }
+    return 'Player'
+  elsif WINS.any? { |line| line.all? { |square| board[square] == COMPUTER_MARK } }
+    return 'Computer'
+  end
+  nil
 end
 
 def player_places_piece!(board)
@@ -60,11 +72,22 @@ def computer_places_piece!(board)
 end
 
 board = initialize_board
-display_board(board)
 
 loop do
-  player_places_piece!(board)
-  computer_places_piece!(board)
   display_board(board)
+
+  player_places_piece!(board)
+  break if someone_won?(board) || board_full?(board)
+  
+  computer_places_piece!(board)
   break if someone_won?(board) || board_full?(board)
 end
+
+display_board(board)
+
+if someone_won?(board)
+  prompt "#{detect_winner(board)} won!"
+else
+  prompt "It's a tie!"
+end
+
