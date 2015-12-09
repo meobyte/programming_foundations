@@ -39,6 +39,15 @@ def empty_squares(board)
   board.keys.select { |num| board[num] == INITIAL_MARK }
 end
 
+def joinor(array, delimiter = ', ', word = 'or')
+  if array.size > 1
+    last = array.pop.to_s
+    string = array.join(delimiter)
+    string += ' ' + word + ' ' + last
+  end
+  string
+end
+
 def board_full?(board)
   empty_squares(board).empty?
 end
@@ -59,7 +68,7 @@ end
 def player_places_piece!(board)
   square = ''
   loop do
-    prompt "Choose a square (#{empty_squares(board).join(', ')}):"
+    prompt "Choose a square (#{joinor(empty_squares(board))}):"
     square = gets.chomp.to_i
     if empty_squares(board).include?(square)
       break
@@ -75,9 +84,14 @@ def computer_places_piece!(board)
   board[square] = AI_MARK
 end
 
+def keep_score(winner, scores)
+  scores.each { |player, score| score += 1 if player == winner }
+end
+
 loop do
   board = initialize_board
-
+  scores = scores || { 'Player' => 0, 'Computer' => 0 }
+  
   loop do
     display_board(board)
 
@@ -89,8 +103,10 @@ loop do
   end
 
   display_board(board)
-
+  
   if someone_won?(board)
+    scores = keep_score(detect_winner(board), scores)
+    puts scores
     prompt "#{detect_winner(board)} won!"
   else
     prompt "It's a tie!"
