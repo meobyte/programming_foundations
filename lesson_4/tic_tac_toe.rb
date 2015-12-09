@@ -85,13 +85,20 @@ def computer_places_piece!(board)
 end
 
 def keep_score(winner, scores)
-  scores.each { |player, score| score += 1 if player == winner }
+  scores.each do |player, score|
+    if player == winner
+      scores[player] = score + 1
+    end
+  end
+
+  scores
 end
+
+scores = { 'Player' => 0, 'Computer' => 0 }
 
 loop do
   board = initialize_board
-  scores = scores || { 'Player' => 0, 'Computer' => 0 }
-  
+
   loop do
     display_board(board)
 
@@ -103,7 +110,7 @@ loop do
   end
 
   display_board(board)
-  
+
   if someone_won?(board)
     scores = keep_score(detect_winner(board), scores)
     puts scores
