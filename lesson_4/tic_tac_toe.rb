@@ -9,8 +9,9 @@ def prompt(message)
   puts "=> #{message}"
 end
 
-def display_board(board)
+def display_board(board, scores)
   system 'clear'
+  keep_score(detect_winner(board), scores)
   puts <<-eos
   You're #{PLAYER_MARK}; Computer is #{AI_MARK}
 
@@ -65,6 +66,17 @@ def detect_winner(board)
   nil
 end
 
+def best_move(board)
+  [AI_MARK, PLAYER_MARK].each do |piece|
+    WINS.each do |line|
+      pieces_in_line = line.count { |square| board[square] == piece }
+      empty = line.select { |square| board[square] == ' ' }
+      return empty.first if pieces_in_line == 2 && empty.length == 1
+    end
+  end
+  nil
+end
+
 def player_places_piece!(board)
   square = ''
   loop do
@@ -80,18 +92,13 @@ def player_places_piece!(board)
 end
 
 def computer_places_piece!(board)
-  square = empty_squares(board).sample
+  square = best_move(board) || empty_squares(board).sample
   board[square] = AI_MARK
 end
 
 def keep_score(winner, scores)
-  scores.each do |player, score|
-    if player == winner
-      scores[player] = score + 1
-    end
-  end
-
-  scores
+  scores.each { |player, score| scores[player] = score + 1 if player == winner }
+  puts "Player won #{scores['Player']} and Computer won #{scores['Computer']}"
 end
 
 scores = { 'Player' => 0, 'Computer' => 0 }
@@ -100,7 +107,7 @@ loop do
   board = initialize_board
 
   loop do
-    display_board(board)
+    display_board(board, scores)
 
     player_places_piece!(board)
     break if someone_won?(board) || board_full?(board)
@@ -109,18 +116,22 @@ loop do
     break if someone_won?(board) || board_full?(board)
   end
 
-  display_board(board)
+  display_board(board, scores)
 
   if someone_won?(board)
-    scores = keep_score(detect_winner(board), scores)
-    puts scores
-    prompt "#{detect_winner(board)} won!"
+    prompt "#{detect_winner(board)} wins this round!"
   else
     prompt "It's a tie!"
   end
 
-  prompt "Play again? (y/n)"
-  answer = gets.chomp
+  answer = "y"
+  if scores.value?(5)
+    scores.each { |player, score| puts "#{scores[player]} wins!" if score == 5 }
+    scores = { 'Player' => 0, 'Computer' => 0 }
+    prompt "Play again? (y/n)"
+    answer = gets.chomp
+  end
+
   break unless answer.downcase.start_with?('y')
 end
 
