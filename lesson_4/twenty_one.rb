@@ -24,9 +24,32 @@ def hand_total(cards)
   total
 end
 
+def busted?(hand)
+  hand_total(hand) > 21
+end
+
+def player_turn(deck, hand)
+  loop do
+    puts "Would you like to (h)it or (s)tay"
+    action = gets.chomp.downcase
+
+    if action == 'h'
+      hand << deck.pop
+      puts "Player has #{hand} for a total of #{hand_total(hand)}"
+    elsif action == 's'
+
+    else
+      puts "Must enter h or s."
+    end
+    break if action == 's' || busted?(hand)
+  end
+end
+
 deck = init_deck
 player_hand = deck.pop(2)
 dealer_hand = deck.pop(2)
 
 puts "Player has #{player_hand} for a total of #{hand_total(player_hand)}"
 puts "Dealer has #{dealer_hand} for a total of #{hand_total(dealer_hand)}"
+
+player_turn(deck, player_hand)
