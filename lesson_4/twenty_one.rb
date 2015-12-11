@@ -1,5 +1,7 @@
 SUITS = ["\u2663", "\u2666", "\u2665", "\u2660"]
 RANKS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
+DEALER_MIN = 17
+MAX_SCORE = 21
 
 def init_deck
   SUITS.product(RANKS).shuffle
@@ -20,12 +22,12 @@ def hand_total(cards)
     end
   end
 
-  aces_count.times { total -= 10 if total > 21 }
+  aces_count.times { total -= 10 if total > MAX_SCORE }
   total
 end
 
 def busted?(hand)
-  hand_total(hand) > 21
+  hand_total(hand) > MAX_SCORE
 end
 
 def player_turn(deck, hand)
@@ -37,11 +39,18 @@ def player_turn(deck, hand)
       hand << deck.pop
       puts "Player has #{hand} for a total of #{hand_total(hand)}"
     elsif action == 's'
-
+      puts "You chose to stay."
     else
       puts "Must enter h or s."
     end
     break if action == 's' || busted?(hand)
+  end
+end
+
+def dealer_turn(deck, hand)
+  loop do
+    break if busted?(hand) || hand_total(hand) >= DEALER_MIN
+    hand << deck.pop
   end
 end
 
@@ -53,3 +62,7 @@ puts "Player has #{player_hand} for a total of #{hand_total(player_hand)}"
 puts "Dealer has #{dealer_hand} for a total of #{hand_total(dealer_hand)}"
 
 player_turn(deck, player_hand)
+dealer_turn(deck, dealer_hand)
+
+puts "Player has #{player_hand} for a total of #{hand_total(player_hand)}"
+puts "Dealer has #{dealer_hand} for a total of #{hand_total(dealer_hand)}"
