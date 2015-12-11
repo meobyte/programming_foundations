@@ -1,7 +1,7 @@
 SUITS = ["\u2663", "\u2666", "\u2665", "\u2660"]
 RANKS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
 DEALER_MIN = 17
-MAX_SCORE = 21
+HAND_MAX = 21
 
 def init_deck
   SUITS.product(RANKS).shuffle
@@ -22,47 +22,83 @@ def hand_total(cards)
     end
   end
 
-  aces_count.times { total -= 10 if total > MAX_SCORE }
+  aces_count.times { total -= 10 if total > HAND_MAX }
   total
 end
 
 def busted?(hand)
-  hand_total(hand) > MAX_SCORE
+  hand_total(hand) > HAND_MAX
 end
 
-def player_turn(deck, hand)
+def show_result(player_hand, dealer_hand)
+  player_total = hand_total(player_hand)
+  dealer_total = hand_total(dealer_hand)
+
+  if player_total > HAND_MAX
+    puts "You busted. Dealer wins."
+  elsif dealer_total > HAND_MAX
+    puts "Dealer busted. You win."
+  elsif dealer_total > player_total
+    puts "Dealer wins."
+  elsif player_total > dealer_total
+    puts "You win."
+  else
+    puts "It's a tie."
+  end
+end
+
+def show_hands(player_hand, dealer_hand, final = false)
+  system 'clear'
+  if final
+    puts "Dealer has #{dealer_hand} for a total of #{hand_total(dealer_hand)}"
+  else
+    puts "Dealer has #{dealer_hand[0]}"
+  end
+  puts "You have #{player_hand} for a total of #{hand_total(player_hand)}"
+end
+
+def player_turn(deck, player_hand, dealer_hand)
   loop do
     puts "Would you like to (h)it or (s)tay"
     action = gets.chomp.downcase
 
     if action == 'h'
-      hand << deck.pop
-      puts "Player has #{hand} for a total of #{hand_total(hand)}"
+      player_hand << deck.pop
+      show_hands(player_hand, dealer_hand)
     elsif action == 's'
       puts "You chose to stay."
     else
       puts "Must enter h or s."
     end
-    break if action == 's' || busted?(hand)
+    break if action == 's' || busted?(player_hand)
   end
 end
 
-def dealer_turn(deck, hand)
+def dealer_turn(deck, dealer_hand)
   loop do
-    break if busted?(hand) || hand_total(hand) >= DEALER_MIN
-    hand << deck.pop
+    break if busted?(dealer_hand) || hand_total(dealer_hand) >= DEALER_MIN
+    dealer_hand << deck.pop
   end
 end
 
-deck = init_deck
-player_hand = deck.pop(2)
-dealer_hand = deck.pop(2)
+def replay
+  puts "Do you want to play again? Y/n"
+  answer = gets.chomp
+  answer.downcase.start_with?('y')
+end
 
-puts "Player has #{player_hand} for a total of #{hand_total(player_hand)}"
-puts "Dealer has #{dealer_hand} for a total of #{hand_total(dealer_hand)}"
+loop do
+  system 'clear'
+  deck = init_deck
+  player_hand = deck.pop(2)
+  dealer_hand = deck.pop(2)
 
-player_turn(deck, player_hand)
-dealer_turn(deck, dealer_hand)
+  show_hands(player_hand, dealer_hand)
+  player_turn(deck, player_hand, dealer_hand)
+  dealer_turn(deck, dealer_hand) unless busted?(player_hand)
+  show_hands(player_hand, dealer_hand, true)
+  show_result(player_hand, dealer_hand)
+  break unless replay
+end
 
-puts "Player has #{player_hand} for a total of #{hand_total(player_hand)}"
-puts "Dealer has #{dealer_hand} for a total of #{hand_total(dealer_hand)}"
+puts "Thanks for playing Twenty-One! Goodbye."
