@@ -30,19 +30,48 @@ def busted?(hand)
   hand_total(hand) > HAND_MAX
 end
 
-def show_result(player_hand, dealer_hand)
+def calculate_result(player_hand, dealer_hand)
   player_total = hand_total(player_hand)
   dealer_total = hand_total(dealer_hand)
 
   if player_total > HAND_MAX
-    puts "You busted. Dealer wins."
+    :player_busted
   elsif dealer_total > HAND_MAX
-    puts "Dealer busted. You win."
+    :dealer_busted
   elsif dealer_total > player_total
-    puts "Dealer wins."
+    :dealer
   elsif player_total > dealer_total
-    puts "You win."
+    :player
   else
+    :tie
+  end
+end
+
+def keep_score(player_hand, dealer_hand, scores)
+  result = calculate_result(player_hand, dealer_hand)
+
+  case result
+  when :player_busted || :dealer
+    scores['Dealer'] += 1
+  when :dealer_busted || :player
+    scores['You'] += 1
+  end
+  scores
+end
+
+def show_result(player_hand, dealer_hand)
+  result = calculate_result(player_hand, dealer_hand)
+
+  case result
+  when :player_busted
+    puts "You busted. Dealer wins."
+  when :dealer_busted
+    puts "Dealer busted. You win."
+  when :dealer
+    puts "Dealer wins."
+  when :player
+    puts "You win."
+  when :tie
     puts "It's a tie."
   end
 end
@@ -81,12 +110,22 @@ def dealer_turn(deck, dealer_hand)
   end
 end
 
-def replay
-  puts "Do you want to play again? Y/n"
-  answer = gets.chomp
+def replay(scores)
+  answer = 'y'
+  if scores.value?(5)
+    scores.each { |player, score| puts "#{scores[player]} won!" if score == 5 }
+    scores = { 'You' => 0, 'Dealer' => 0 }
+    puts "Do you want to play again? Y/n"
+    answer = gets.chomp
+  else
+    puts "You won #{scores['You']} and Dealer won #{scores['Dealer']}"
+    puts "press enter to continue to next hand"
+    gets.chomp
+  end
   answer.downcase.start_with?('y')
 end
 
+scores = { 'You' => 0, 'Dealer' => 0 }
 loop do
   system 'clear'
   deck = init_deck
@@ -98,7 +137,10 @@ loop do
   dealer_turn(deck, dealer_hand) unless busted?(player_hand)
   show_hands(player_hand, dealer_hand, true)
   show_result(player_hand, dealer_hand)
-  break unless replay
+  
+  scores = keep_score(player_hand, dealer_hand, scores)
+
+  break unless replay(scores)
 end
 
 puts "Thanks for playing Twenty-One! Goodbye."
