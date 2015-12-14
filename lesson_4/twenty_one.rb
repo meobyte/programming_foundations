@@ -51,9 +51,13 @@ def keep_score(player_hand, dealer_hand, scores)
   result = calculate_result(player_hand, dealer_hand)
 
   case result
-  when :player_busted || :dealer
+  when :player_busted
     scores['Dealer'] += 1
-  when :dealer_busted || :player
+  when :dealer
+    scores['Dealer'] += 1
+  when :dealer_busted
+    scores['You'] += 1
+  when :player
     scores['You'] += 1
   end
   scores
@@ -113,8 +117,8 @@ end
 def replay(scores)
   answer = 'y'
   if scores.value?(5)
-    scores.each { |player, score| puts "#{scores[player]} won!" if score == 5 }
-    scores = { 'You' => 0, 'Dealer' => 0 }
+    scores.each { |player, score| puts "#{player} won the game!" if score == 5 }
+    scores.replace('You' => 0, 'Dealer' => 0 )
     puts "Do you want to play again? Y/n"
     answer = gets.chomp
   else
@@ -135,10 +139,9 @@ loop do
   show_hands(player_hand, dealer_hand)
   player_turn(deck, player_hand, dealer_hand)
   dealer_turn(deck, dealer_hand) unless busted?(player_hand)
+  scores = keep_score(player_hand, dealer_hand, scores)
   show_hands(player_hand, dealer_hand, true)
   show_result(player_hand, dealer_hand)
-  
-  scores = keep_score(player_hand, dealer_hand, scores)
 
   break unless replay(scores)
 end
